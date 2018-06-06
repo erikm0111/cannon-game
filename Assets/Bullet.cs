@@ -17,7 +17,9 @@ public class Bullet : NetworkBehaviour {
     public bool DamageFallsOff = true;
     public Tank SourceTank;
 
-    public bool RotatesWithVelocity;
+    public bool RotatesWithVelocity = true;
+
+    public GameObject ExplosionPrefab;
 
 	// Update is called once per frame
 	void Update () {
@@ -37,6 +39,13 @@ public class Bullet : NetworkBehaviour {
         OnTriggerEnter2D(collision.collider);    
     }
 
+    //[ClientRpc]
+    //void RpcDoExplosion(Vector2 position)
+    //{
+    //    GameObject go = Instantiate(ExplosionPrefab, position, Quaternion.identity);
+    //    go.GetComponent<BulletExplosion>().Radius = radius;
+    //}
+
     void OnTriggerEnter2D(Collider2D collider)
     {
         Debug.Log("OnTriggerEnter2D");
@@ -49,6 +58,8 @@ public class Bullet : NetworkBehaviour {
         {
             return;
         }
+
+        //RpcDoExplosion(this.transform.position);
 
         Collider2D[] cols = Physics2D.OverlapCircleAll(this.transform.position, Radius);
 
