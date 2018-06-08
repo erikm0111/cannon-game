@@ -7,8 +7,12 @@ public class Tank : NetworkBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
-	}
+        numBullets = MAX_BULLETS;
+    }
+
+    int MAX_BULLETS = 4;
+    int numBullets;
+    bool isReloaded = true;
 
     float MovementPerTurn = 5;
     float MovementLeft;
@@ -70,7 +74,10 @@ public class Tank : NetworkBehaviour {
         AuthorityUpdateShooting();
 
         GameObject pn_go = GameObject.Find("PowerNumber");
-        pn_go.GetComponent<UnityEngine.UI.Text>().text = turretPower.ToString("#.00");
+        pn_go.GetComponent<UnityEngine.UI.Text>().text = "Power: " + turretPower.ToString("#.00");
+
+        /*GameObject nb_go = GameObject.Find("NumBullets");
+        nb_go.GetComponent<UnityEngine.UI.Text>().text = "Missiles: " + numBullets.ToString();*/
     }
 
     void AuthorityUpdateMovement()
@@ -107,15 +114,50 @@ public class Tank : NetworkBehaviour {
 
         turretPower = Mathf.Clamp(turretPower + powerChange, 0, 20);
 
+        if (numBullets == 0)
+        {
+            if (!isReloaded)
+            {
+                GameObject nb_go = GameObject.Find("NumBullets");
+                nb_go.GetComponent<UnityEngine.UI.Text>().text = "Reloading...";
+                isReloaded = true;
+                StartCoroutine(ReloadBullets(3));
+            }
+        }
+        else
+        {
+            GameObject nb_go = GameObject.Find("NumBullets");
+            nb_go.GetComponent<UnityEngine.UI.Text>().text = "Missiles: " + numBullets.ToString();
+        }
 
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            Vector2 velocity = new Vector2(
-                turretPower * Mathf.Cos(turretAngle * Mathf.Deg2Rad),
-                turretPower * Mathf.Sin(turretAngle * Mathf.Deg2Rad)
-            );
-            CmdFireBullet(BulletSpawnPoint.position, velocity);
+            if (numBullets > 0)
+            {
+                isReloaded = false;
+                Vector2 velocity = new Vector2(
+                    turretPower * Mathf.Cos(turretAngle * Mathf.Deg2Rad),
+                    turretPower * Mathf.Sin(turretAngle * Mathf.Deg2Rad)
+                );
+                CmdFireBullet(BulletSpawnPoint.position, velocity);
+                numBullets -= 1;
+            }
+            /*else
+            {
+                if (!isReloaded)
+                {
+                    isReloaded = true;
+                    StartCoroutine(ReloadBullets(5));
+                }
+            }*/
         }
+    }
+
+
+    IEnumerator ReloadBullets(float time)
+    {
+        yield return new WaitForSeconds(time);
+        numBullets = MAX_BULLETS;
     }
 
     [Command]
