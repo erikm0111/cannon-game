@@ -39,12 +39,18 @@ public class Bullet : NetworkBehaviour {
         OnTriggerEnter2D(collision.collider);    
     }
 
-    //[ClientRpc]
-    //void RpcDoExplosion(Vector2 position)
-    //{
-    //    GameObject go = Instantiate(ExplosionPrefab, position, Quaternion.identity);
-    //    go.GetComponent<BulletExplosion>().Radius = radius;
-    //}
+    void DoExplosion(Vector2 position)
+    {
+        GameObject go = Instantiate(ExplosionPrefab, position, Quaternion.identity);
+        go.GetComponent<BulletExplosion>().Radius = Radius;
+        Destroy(go, 0.5f);
+    }
+
+    [ClientRpc]
+    void RpcDoExplosion(Vector2 position)
+    {
+        DoExplosion(position);
+    }
 
     void OnTriggerEnter2D(Collider2D collider)
     {
@@ -59,9 +65,10 @@ public class Bullet : NetworkBehaviour {
             return;
         }
 
-        //RpcDoExplosion(this.transform.position);
+        DoExplosion(this.transform.position);
+        RpcDoExplosion(this.transform.position);
 
-        Collider2D[] cols = Physics2D.OverlapCircleAll(this.transform.position, Radius);
+        Collider2D[] cols = Physics2D.OverlapCircleAll(this.transform.position, Radius/2);
 
         foreach(Collider2D col in cols)
         {

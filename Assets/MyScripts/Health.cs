@@ -45,6 +45,17 @@ public class Health : NetworkBehaviour {
             return;
         }
         Debug.Log("DIE");
+        scenes.is_over = 1;
         Destroy(gameObject);
+    }
+
+    void OnGUI()
+    {
+
+        Vector2 targetPos;
+        targetPos = Camera.main.WorldToScreenPoint(transform.position);
+
+        GUI.Box(new Rect(targetPos.x - 20, Screen.height - targetPos.y - 80, 60, 20), hitpoints + "/" + 100);
+
     }
 }

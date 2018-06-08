@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkBehaviour {
 
@@ -20,7 +21,11 @@ public class GameManager : NetworkBehaviour {
         {
             return;
         }
-
+        
+        if (scenes.is_over == 1)
+        {
+            SceneManager.LoadScene("menu");
+        }
         TimeLeft -= Time.deltaTime;
         if (TimeLeft <= 0)
         {

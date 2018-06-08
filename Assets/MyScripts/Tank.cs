@@ -23,7 +23,7 @@ public class Tank : NetworkBehaviour {
     public Transform BulletSpawnPoint;
 
     [SyncVar (hook = "OnTurretAngleChange")]
-    float turretAngle = 45f;
+    float turretAngle = 90f;
 
     float turretPower = 10f;
 
@@ -55,11 +55,12 @@ public class Tank : NetworkBehaviour {
 
         if (hasAuthority == false)
         {
-            transform.position = Vector3.SmoothDamp(
+            transform.position = serverPosition;
+            /*transform.position = Vector3.SmoothDamp(
                 transform.position, 
                 serverPosition, 
                 ref serverPositionSmoothVelocity, 
-                0.25f);
+                0.25f);*/
         }
 	}
 
@@ -161,4 +162,18 @@ public class Tank : NetworkBehaviour {
         }
         turretAngle = newAngle;
     }
+    /*
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.name == "Barrier")  // or if(gameObject.CompareTag("YourWallTag"))
+        {
+            Rigidbody2D rb = GetComponent<Rigidbody2D>();
+            rb.velocity = Vector3.zero;
+        }
+        if (collision.gameObject.name == "Ground")  // or if(gameObject.CompareTag("YourWallTag"))
+        {
+            Rigidbody2D rb = GetComponent<Rigidbody2D>();
+            rb.position = new Vector3(rb.position.x,0 ,0);
+        }
+    }*/
 }
